@@ -105,7 +105,11 @@ func (p *otelPlugin) before(spanName string) gormHookFunc {
 		}
 		ctx := tx.Statement.Context
 		ctx = context.WithValue(ctx, parentCtxKey{}, ctx)
-		ctx, _ = p.tracer.Start(ctx, spanName, trace.WithSpanKind(trace.SpanKindClient))
+		ctx, _ = p.tracer.Start(
+			ctx,
+			fmt.Sprintf("%s %s", spanName, tx.Statement.Table),
+			trace.WithSpanKind(trace.SpanKindClient),
+		)
 		tx.Statement.Context = ctx
 	}
 }
